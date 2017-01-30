@@ -2304,9 +2304,9 @@ setMethod("drawGD", signature("AlignmentsTrack"), function(GdObject, minBase, ma
     }
     return(switch(as.character(exponent),
                   "0"=sprintf("%i", as.integer(tckText)),
-                  "3"=sprintf("%s ks", tckText),
-                  "6"=sprintf("%s ms", tckText),
-                  "9"=sprintf("%s gs", tckText),
+                  "3"=sprintf("%s kfps", tckText),
+                  "6"=sprintf("%s mfps", tckText),
+                  "9"=sprintf("%s gfps", tckText),
                   sapply(tckText, function(x) bquote(paste(.(x), " ",10^.(exponent))))))
  }
 
