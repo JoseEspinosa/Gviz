@@ -2287,12 +2287,29 @@ setMethod("drawGD", signature("AlignmentsTrack"), function(GdObject, minBase, ma
     tck <- tckText
     exponent <- if(is.null(.dpOrDefault(GdObject, "exponent"))){
         exp <- 0
-        while(all(tck[tck>0]/10^exp >= 1))
-            exp <- exp+3
-        exp-3
+        #while(all(tck[tck>0]/10^exp >= 1))
+        #    exp <- exp+3
+        #exp-3
+	if (all(tck[tck>0]/3600 < 1)) {
+	  exp <- 3
+	  exp - 0
+	}
+	else if (all(tck[tck>0]/864000 < 1)) {
+	  exp <- 6
+	  exp - 0
+	} 
+	else if (all(tck[tck>0]/6048000 < 1)) {
+	  exp <- 9
+	  exp - 0
+	}
+	
     } else  max(0, .dpOrDefault(GdObject, "exponent"))
     if(exponent > 0){
-        tckText <- tckText/(10^exponent)
+        #tckText <- tckText/(10^exponent)
+	switch(exponent,
+        3=tckText/3600,
+        6=tckText/864000,
+        9=tckText/6048000)
     }
     if(prune){
         tmp <- as.character(tckText)
@@ -2304,9 +2321,12 @@ setMethod("drawGD", signature("AlignmentsTrack"), function(GdObject, minBase, ma
     }
     return(switch(as.character(exponent),
                   "0"=sprintf("%i", as.integer(tckText)),
-                  "3"=sprintf("%s kfps", tckText),
-                  "6"=sprintf("%s mfps", tckText),
-                  "9"=sprintf("%s gfps", tckText),
+                  #"3"=sprintf("%s kfps", tckText),
+                  #"6"=sprintf("%s mfps", tckText),
+                  #"9"=sprintf("%s gfps", tckText),
+		  "3"=sprintf("%s h", tckText),
+                  "6"=sprintf("%s w", tckText),
+                  "9"=sprintf("%s d", tckText),
                   sapply(tckText, function(x) bquote(paste(.(x), " ",10^.(exponent))))))
  }
 
