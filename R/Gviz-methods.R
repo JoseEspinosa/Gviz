@@ -2306,10 +2306,10 @@ setMethod("drawGD", signature("AlignmentsTrack"), function(GdObject, minBase, ma
     } else  max(0, .dpOrDefault(GdObject, "exponent"))
     if(exponent > 0){
         #tckText <- tckText/(10^exponent)
-	switch(exponent,
-        3=tckText/3600,
-        6=tckText/864000,
-        9=tckText/6048000)
+	switch(as.character(exponent),
+       "3"=tckText/3600,
+       "6"=tckText/864000,
+       "9"=tckText/6048000)
     }
     if(prune){
         tmp <- as.character(tckText)
