@@ -694,19 +694,53 @@
 ## Arguments:
 ##    o x: a vector of data values
 ## Value: the tick mark coordinates
+# .ticks <- function(x){
+#   rx <- range(x)
+#   lz <- log((rx[2]-rx[1])/3, 10)
+#   fl <- floor(lz)
+#   if( lz-fl > log(5, 10))
+#     fl <- fl +  log(5, 10)
+#   tw <- round(10^fl)
+#   i0 <- ceiling(rx[1]/tw)
+#   i1 <- floor(rx[2]/tw)
+#   seq(i0, i1)*tw
+# }
 .ticks <- function(x){
   rx <- range(x)
-  lz <- log((rx[2]-rx[1])/3, 10)
+  lz <- log((rx[2]-rx[1]), 60)
   fl <- floor(lz)
-  if( lz-fl > log(5, 10))
-    fl <- fl +  log(5, 10)
-  tw <- round(10^fl)
+  
+  if (fl < 2) {
+    base <- 10
+    lz <- log((rx[2]-rx[1])/3, 10)
+    fl <- floor(lz)
+  }
+  else if (fl >= 2 && fl < 3) {
+    base <- 60
+  }
+  else if (fl > 3 && lz < log(604800, 60)) {
+    base <- 60
+  }
+  else if (fl > 3 && lz > log(604800, 60)) {   
+    base <- 86400
+    lz <- log((rx[2]-rx[1]), base)
+    fl <- floor(lz)
+  }
+  else {
+    base <- 86400
+    lz <- log((rx[2]-rx[1]), base)
+    fl <- floor(lz)
+  }
+  
+  if( lz-fl > log(5, base))
+    fl <- fl +  log(5, base)
+  
+  tw <- round(base^fl)
   i0 <- ceiling(rx[1]/tw)
   i1 <- floor(rx[2]/tw)
+
   seq(i0, i1)*tw
 }
-
-
 
 ## A lattice-style panel function to draw smoothed 'mountain' plots
 ## Arguments:

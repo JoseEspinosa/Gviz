@@ -2285,32 +2285,36 @@ setMethod("drawGD", signature("AlignmentsTrack"), function(GdObject, minBase, ma
 ##----------------------------------------------------------------------------------------------------------------------------
 .expLabel <- function(GdObject, tckText, prune=FALSE){
     tck <- tckText
-    exponent <- if(is.null(.dpOrDefault(GdObject, "exponent"))){
+#     write(paste ("warning", tckText), stderr())
+    exponent <- if(is.null(.dpOrDefault(GdObject, "exponent"))){      
         exp <- 0
         #while(all(tck[tck>0]/10^exp >= 1))
         #    exp <- exp+3
         #exp-3
-	if (all(tck[tck>0]/3600 < 1)) {
-	  exp <- 3
-	  exp - 0
-	}
-	else if (all(tck[tck>0]/864000 < 1)) {
-	  exp <- 6
-	  exp - 0
-	} 
-	else if (all(tck[tck>0]/6048000 < 1)) {
-	  exp <- 9
-	  exp - 0
-	}
-	
+    if (all(tck[tck>0]/604800 >= 1)) {
+      exp <- 9
+      exp - 0
+    }
+    else if (all(tck[tck>0]/86400 >= 1)) {
+      exp <- 6
+      exp - 0
+    } 
+  	else if (all(tck[tck>0]/3600 >= 1)) {
+  	  exp <- 3
+  	  exp - 0
+  	}
+  	else {
+      exp - 0
+  	}
     } else  max(0, .dpOrDefault(GdObject, "exponent"))
     if(exponent > 0){
         #tckText <- tckText/(10^exponent)
-	switch(as.character(exponent),
-       "3"=tckText/3600,
-       "6"=tckText/864000,
-       "9"=tckText/6048000)
-    }
+        tckText <-switch(as.character(exponent),
+             "3"=tckText/3600,
+             "6"=tckText/86400,
+#              "9"=tckText/604800) # weeks notation
+             "9"=tckText/86400)
+          }
     if(prune){
         tmp <- as.character(tckText)
         count <- max(nchar(gsub("*.\\.", "", tmp)))
@@ -2324,8 +2328,9 @@ setMethod("drawGD", signature("AlignmentsTrack"), function(GdObject, minBase, ma
                   #"3"=sprintf("%s kfps", tckText),
                   #"6"=sprintf("%s mfps", tckText),
                   #"9"=sprintf("%s gfps", tckText),
-		  "3"=sprintf("%s h", tckText),
-                  "6"=sprintf("%s w", tckText),
+		              "3"=sprintf("%s h", tckText),
+                  "6"=sprintf("%s d", tckText),
+#                   "9"=sprintf("%s w", tckText), # weeks notation
                   "9"=sprintf("%s d", tckText),
                   sapply(tckText, function(x) bquote(paste(.(x), " ",10^.(exponent))))))
  }
@@ -2422,6 +2427,7 @@ setMethod("drawGD", signature("GenomeAxisTrack"), function(GdObject, minBase, ma
 
         ## work out exponent/unit
         label <- .expLabel(GdObject, v)
+       
         grid.lines(x=c(xoff, v+xoff), y=c(0,0), default.units="native", gp=gpar(col=color, lwd=lwd, alpha=alpha))
         grid.segments(x0=c(xoff, v+xoff), y0=c(0-tickHeight, 0-tickHeight),
                       x1=c(xoff, v+xoff), y1=c(tickHeight,tickHeight, tickHeight),
@@ -2491,6 +2497,7 @@ setMethod("drawGD", signature("GenomeAxisTrack"), function(GdObject, minBase, ma
     grid.segments(x0=tck, x1=tck, y0=y0t, y1=y1t,  default.units="native", gp=gpar(col=color, alpha=alpha, lwd=lwd, lineend="square"))
     ## The top level tick labels
     label <- .expLabel(GdObject, tck)
+		
     ylabs <- y1t + (ifelse(y1t>0, 1, -1) * (textYOff + (as.numeric(convertHeight(stringHeight("1"),"native"))/2)*cex))
     ttck <- if(min(diff(tck))==1) tck+0.5 else tck
     if(is.character(label)){
