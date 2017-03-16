@@ -2291,7 +2291,11 @@ setMethod("drawGD", signature("AlignmentsTrack"), function(GdObject, minBase, ma
         #while(all(tck[tck>0]/10^exp >= 1))
         #    exp <- exp+3
         #exp-3
-    if (all(tck[tck>0]/604800 >= 1)) {
+    if (all(tck[tck>0]/604800 >= 1) && max(tck)-min(tck) <= 216000) {
+      exp <- 3
+      exp - 0
+    }
+    else if (all(tck[tck>0]/604800 >= 1)) {
       exp <- 9
       exp - 0
     }
