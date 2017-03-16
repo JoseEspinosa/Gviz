@@ -2295,6 +2295,11 @@ setMethod("drawGD", signature("AlignmentsTrack"), function(GdObject, minBase, ma
       exp <- 9
       exp - 0
     }
+    # less than 60 hours print hour ticks and not days
+    else if (all(tck[tck>0]/86400 >= 1 && max(tck)-min(tck) <= 216000)) {
+      exp <- 3
+      exp - 0
+    } 
     else if (all(tck[tck>0]/86400 >= 1)) {
       exp <- 6
       exp - 0
